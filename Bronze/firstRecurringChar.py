@@ -1,3 +1,5 @@
+#https://www.reddit.com/r/dailyprogrammer/comments/7cnqtw/20171113_challenge_340_easy_first_recurring/
+
 decipherableString = input("Input string to decipher please: ")
 
 for i in range(len(decipherableString)):
