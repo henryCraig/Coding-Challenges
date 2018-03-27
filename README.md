@@ -1,2 +1,2 @@
 # Coding-Challenges
-Smalle programming challenges from Reddit
+Small programming challenges from Reddit
