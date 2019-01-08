@@ -1,176 +1,113 @@
 #https://www.reddit.com/r/dailyprogrammer/comments/8jvbzg/20180516_challenge_361_intermediate_elsiefour/
 
-"""
-Decryption is the same, but it (obviously) starts from the ciphertext character,
-and the plaintext is computed by moving along the negated vector (left and up)
-of the tile under the marker. Rotation and marker movement remains the same
-(right-rotate on plaintext tile, down-rotate on ciphertext tile).
-"""
+#The thing I want to remember building it this time around is that we are working with 0-35
+#yes there are 36 characters, but the number starts at 0
 
 
-"""
-be_sure_to_drink_your_ovaltine
-['#', 'o', '2', 'z', 'q', 'i',
-'j', 'b', 'k', 'c', 'w', '8',
-'h', 'u', 'd', 'm', '9', '4',
-'g', '5', 'f', 'n', 'p', 'r',
-'x', 'l', 'a', '7', 't', '6',
-'_', 'y', 's', 'e', '3', 'v']
-"""
-#t is at the 29th location on the cipherAlphabet
-
-
-
-"""
-aaaaaaaaaaaaaaaaaaaa
- ['s', '2', 'f', 'e', 'r', 'w',
- '_', 'n', 'x', '3', '4', '6',
- 't', 'y', '5', 'o', 'd', 'i',
- 'u', 'p', 'q', '#', 'l', 'm',
- 'z', '8', 'a', 'j', 'h', 'g',
- 'c', 'v', 'k', '7', '9', 'b']
-"""
-#but # is on the 0th element of the cipher alphabet so it MUST return a zero for me
-
-
-#I think this needs cleaned up
-
-
-def lCFour(encryptKey, encryptedMessage):
+def lc4(key, encryptedMessage):
     cipherAlpha = "#_23456789abcdefghijklmnopqrstuvwxyz"
-    markerLocation = 0
-    encryptKey = list(encryptKey)                                               # #o2zqijbkcw8hudm94g5fnprxla7t6_yse3v
-    encryptedMessage = list(encryptedMessage)                                   # b66rfjmlpmfh9vtzu53nwf5e7ixjnp
+    key = list(key)
+    encryptedMessage = list(encryptedMessage)
     decryptedString = ''
+    markerChar = key[0]
+    markerLoc = 0
+
+    for messageChar in range(len(encryptedMessage)):
+        cipherLoc = key.index(encryptedMessage[messageChar])                    #finds the ciphertext characters location in the Key
+        print("Cipher Loc: ", cipherLoc, ", Cipher Char: ", key[cipherLoc])
 
 
-    #print(f"encrpytKey: {encryptKey}")
-
-    for messageChar in range(1):
-        indexLocation = encryptKey.index(encryptedMessage[messageChar])
-        print("Letter: ", encryptedMessage[messageChar], " found at position: ", indexLocation, " of the encryptKey")
+        print("markerLoc: ", markerLoc, "markerChar: ", markerChar)             #prints out the marker early so that we can verify its doing the up and left moves correctly
 
 
-        print("EncryptKey at Location: ", markerLocation)
-        print("Location in the chipher alphabet: ", cipherAlpha.find(encryptKey[markerLocation]))
-
-        #then we use that that characters location to give ourselves the horizontal and vertical movements
-        leftMove = cipherAlpha.find(encryptKey[markerLocation])%6
-        print(f'leftMove: {leftMove}')
-
-        #Now we want to print out the letter a
-        upMove = int(cipherAlpha.find(encryptKey[markerLocation])/6)
-        print(f'upMove: {upMove}')
+        cipherLeft = cipherAlpha.find(key[markerLoc])%6                         #Creating the left and up moves for finding the plaintext character
+        cipherUp = int(cipherAlpha.find(key[markerLoc])/6)                      #These are created using the current marker location
+        print("cipherLeft:",cipherLeft,"cipherUp",cipherUp)
 
 
-        #finds the character within the row - does the left move
-        decryptLocation = indexLocation
-        if leftMove > indexLocation % 6:
-            decryptLocation = decryptLocation + 6 - leftMove
+
+        plainLoc = cipherLoc                                                    #setting the plaintext location to equal the ciphertext location
+        if cipherLeft > cipherLoc % 6:                                          #so that we can perform operations on it
+            plainLoc = plainLoc + 6 - cipherLeft
         else:
-            decryptLocation -= leftMove
+            plainLoc -= cipherLeft
 
+        plainLoc -= cipherUp*6                                                  #finds the char within the column
+        if plainLoc < 0:
+            plainLoc += 36
 
-        #finds the char within the column
-        decryptLocation -= upMove*6
-
-
-        #we could just say, if decryptLocation negative, add 36
-        if decryptLocation < 0:
-            decryptLocation += 36
-
-        print("decryptLocation: ", decryptLocation)
-        print("Index Location: ", indexLocation)
-        print("Char at decryptLocation: ", encryptKey[decryptLocation])
-
-        #adds char found to the decryptedString
-        decryptedString += encryptKey[decryptLocation]
-
-
-        #It Works!!!! This shifts the plaintext char's ('a') row to the right!
-        #I still think it could possibly be cleaned up in the future maybe, but that's something I will look into later
-        columnLoc = int(decryptLocation/6)
-        encryptKey[columnLoc*6:(columnLoc+1)*6] = [encryptKey[(columnLoc+1)*6-1]] + encryptKey[columnLoc*6:(columnLoc+1)*6-1]
-        print(encryptKey[columnLoc*6:(columnLoc+1)*6])
-
-
-        #and down rotate on the ciphertext tile
-
-
-        """
-        columnLoc = int(indexLocation/6)
-
-
-        #This shifts an entire row to the left
-        #And fixed the issue where it was adding an extra char!
-        encryptKey[columnLoc*6:(columnLoc+1)*6] = [encryptKey[(columnLoc+1)*6-1]] + encryptKey[columnLoc*6:(columnLoc+1)*6-1]
-        print(encryptKey[columnLoc*6:(columnLoc+1)*6])
-
-        #print(f"encrpytKey: {encryptKey}")
-
-
-        #after this we can print out the new encryptKey, and then put it into a grid, to determine if its working or not
-        tempChar = encryptKey[columnLoc]
-        #print(f"Temp: {tempChar}")
-
-        for letter in range(6):
-            encryptKey[columnLoc-(letter*6)] = encryptKey[columnLoc-(letter*6+6)]
-
-        encryptKey[columnLoc+6] = tempChar
-
-        #print(f"encrpytKey: {encryptKey}")
-
-
-
-        #so at this point we need to move the marker
-        #so now we need to move the marker 4 right and 1 down?
-
-        #or maybe we have to reverse it for the decryption
-        #so a for reverse, or char 4 for regular
-
-
-        #we could get location 30 by reversing 1, and going down 4
-        #we just need to formalize that procedure and have it do that every time
-        #whatever happens we can create a way for it to go up or down, or left and right
+        decryptedString += key[plainLoc]
+        print("plainLoc:", plainLoc, "planLocChar:", key[plainLoc])
 
 
 
 
+        #we set these up before sliding things around
+        rightMarkerMove = cipherAlpha.find(key[cipherLoc])%6
+        downMarkerMove = int(cipherAlpha.find(key[cipherLoc])/6)
+
+
+        #start of the tracking for the cipher char
+        cipherChar = key[cipherLoc]
+
+        #(right-rotate on plaintext tile, down-rotate on ciphertext tile)
+        columnLoc = int(plainLoc/6)                                             #Shifting the Row, and then the column in the KEY
+        key[columnLoc*6:(columnLoc+1)*6] = [key[(columnLoc+1)*6-1]] + key[columnLoc*6:(columnLoc+1)*6-1]
+
+        #2nd part of the cipherChar tracking
+        cipherLoc = key.index(cipherChar)
+
+        ciphCol = cipherLoc % 6
+        for i in range(30, 0, -6):
+            key[i+ciphCol], key[i-6+ciphCol] = key[i-6+ciphCol], key[i+ciphCol]
+
+
+        #print(key)
+
+
+        markerLoc = key.index(markerChar)                                       #finds the marker again, just in case it moved
+        print("Marker Char: ", markerChar)
+
+        #These are created above the shifiting functions
+        print("rightMarkerMove: ", rightMarkerMove)
+        print("downMarkerMove: ", downMarkerMove)
 
 
 
-        #This moves the markers column
-        if markerLocation - 1 < 0:
-            markerLocation += 5
+
+        #Final Thing: Time to move the marker itself
+        if (markerLoc % 6) + rightMarkerMove > 5:
+            markerLoc += rightMarkerMove
+            markerLoc -= 6
         else:
-            markerLocation -= 1
+            markerLoc += rightMarkerMove
 
-        print(f"Marker Location: {markerLocation}")
-        #This moves the markers row
-        #so we want to use minus so we dont get an index error
+        markerLoc += downMarkerMove*6
+        if markerLoc > 35:
+            markerLoc -= 36
 
+        print("markerLoc after Move: ", markerLoc, "at Char: ", key[markerLoc])
 
-        markerLocation = 30
-        print(f"First Marker Location: {markerLocation}")
-        """
-
-
-    print("decryptedString: ", decryptedString)
+        markerChar = key[markerLoc]
 
 
+        print()
 
-lCFour("s2ferw_nx346ty5odiupq#lmz8ajhgcvk79b", 'tk5j23tq94_gw9c#lhzs')
-#this should output "aaaaaaaaaaaaaaaaaa" like that
+    print("Return String: ", decryptedString)
+
+lc4("9mlpg_to2yxuzh4387dsajknf56bi#ecwrqv", "grrhkajlmd3c6xkw65m3dnwl65n9op6k_o59qeq")
 
 
 """
 Key - #o2zqijbkcw8hudm94g5fnprxla7t6_yse3v
 Message - b66rfjmlpmfh9vtzu53nwf5e7ixjnp
 output - be_sure_to_drink_your_ovaltine
-"""
 
-"""
 Key - s2ferw_nx346ty5odiupq#lmz8ajhgcvk79b
 Message - tk5j23tq94_gw9c#lhzs
 output - aaaaaaaaaaaaaaaaaaaa
+
+Key - 9mlpg_to2yxuzh4387dsajknf56bi#ecwrqv
+Message - grrhkajlmd3c6xkw65m3dnwl65n9op6k_o59qeq
+output - congratulations_youre_a_dailyprogrammer
 """
