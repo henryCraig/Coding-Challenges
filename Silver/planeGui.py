@@ -1,7 +1,6 @@
 from tkinter import ttk
 from tkinter import *
 import re
-import time
 
 from opensky_api import OpenSkyApi
 from geopy import distance
