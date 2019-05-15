@@ -17,14 +17,6 @@ def findClosestPlane(givenLat, givenLon):
             closestPlaneDistance = currentPlaneDistance
             closestPlaneNumber = s
 
-    print("Closest Distance: ", closestPlaneDistance)
-    print("Longitude: ", closestPlaneNumber.longitude)
-    print("Latitude: ", closestPlaneNumber.latitude)
-    print("Geometric Altitude: ", closestPlaneNumber.geo_altitude)
-    print("Country of Origin: ", closestPlaneNumber.origin_country)
-    print("Callsign: ", closestPlaneNumber.callsign)
-    print("ICA024 ID: ", closestPlaneNumber.icao24)
-
     return [closestPlaneDistance, closestPlaneNumber.latitude, closestPlaneNumber.longitude, closestPlaneNumber.callsign, closestPlaneNumber.origin_country]
 
 def findPlaneCallback():
